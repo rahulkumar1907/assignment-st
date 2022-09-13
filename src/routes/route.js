@@ -11,8 +11,8 @@ router.post('/createUser', createUser);
 
 router.post('/login',userLogIn );
 
-router.put('/followers', followers);
-router.put('/unfollowUser', unfollowUser);
+router.post('/followers', followers);
+router.post('/unfollowUser', unfollowUser);
 
 // //==post tweet
 router.post('/postTweet', createPost);

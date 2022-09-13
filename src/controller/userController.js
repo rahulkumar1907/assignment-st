@@ -65,55 +65,7 @@ const userLogIn=async(req,res)=>{
         res.status(500).send(err.msg)
     }
 }
-//...............................getUser.....................................................
-const getData=async(req,res)=>{
-  try{
-      let userId= req.params.userId
-      if (!validator.isValidObjectId(userId))
-      return res.status(400).send({ status: false, message: `${userId} is NOT a valid userID` });
 
-    let findId= await userSchema.findOne({_id:userId})
-    console.log(findId)
-    if(!findId) return res.status(404).send({msg:"invalid userId"})
-      
-    let {fullName,mobile,following,followers}=findId
-    res.status(200).send({data:fullName,mobile,following,followers})
-}
-catch(err){res.status(500).send(err.message)}
-}
-//.....................................update......................................................
-const updateUser = async(req,res)=>{
-   try{ 
-    let userId = req.params.userId
-    
-    let findId= await userSchema.findOne({_id:userId})
-    if(!findId) return res.status(404).send({msg:"invalid userId"})
-
-   let data = req.body
-   if(!validator.isValidValue(data)){
-    return res.status(404).send({msg:"enter the valid data"})
-   }
-   
-   let updateData = await userSchema.findOneAndUpdate({_id:userId},{$set:data},{new:true}) 
-   res.status(200).send({data:updateData})
-   }
-   catch(err){res.status(500).send(err.message)}
-}
-
-//.................................deleteUser....................................
-deleteUser=async(req,res)=>{
-  try{
-      let userId= req.params.userId
-     
-      let findId= await userSchema.findOne({_id:userId})
-    
-    if(!findId) return res.status(404).send({msg:"invalid userId"})
-    let deletedata= await userSchema.findOneAndUpdate({_id:userId},{$set:{isDeleted:true}},{new:true})
-    res.status(200).send({msg:"account has been deleted",deletedata})
-}
-
-catch(err){res.status(500).send(err.message)}
-}
 //...........................folllow.....................................................
 const followers=async(req,res)=>{
     let mainUser= req.params.userId
@@ -161,4 +113,4 @@ const unfollowUser= async(req,res)=>{
 
 
 
-module.exports={ createUser ,userLogIn, getData,updateUser,deleteUser,followers,unfollowUser}
+module.exports={ createUser ,userLogIn,followers,unfollowUser}

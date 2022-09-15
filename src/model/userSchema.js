@@ -9,7 +9,9 @@ const userSchema= new mongoose.Schema({
     password:{type:String,required:true},
     gender:{type:String,required:true,enum:["male","female","others"]},
     followers:{type:Array,default:[]},
+    blocked:{type:Array,default:[]},
     following:{type:Array,default:[]},
+    profile:{type:String,required:true,enum:["public","private"]},
     isDeleted:{type:String,default:false}
     
 

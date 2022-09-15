@@ -1,8 +1,9 @@
 const userSchema = require("../model/userSchema")
-
+const postSchema= require("../model/postModel")
+const mongoose = require ("mongoose")
 const validator= require("../validator")
 const jwt = require("jsonwebtoken")
-const postModel = require("../model/postModel")
+// const postModel = require("../model/postModel")
 
 
 const createUser=async(req,res)=>{
@@ -20,7 +21,7 @@ const createUser=async(req,res)=>{
    let findemail= await userSchema.findOne({email:email})
    if(findemail) res.status(404).send("this email is already registered")
    
-   if(!validator.isValidPassword(password)) {return res.status(400).send({msg:"password length should be 8-15 char & contain atleat 1 number "})}
+   if(!validator.isValidPassword(password)) {return res.status(400).send({msg:"password length should be 8-15 char & contain atleat 1 number,1capital letter,1 small letter and 1 special character "})}
     
     let createData = await userSchema.create(data)
     res.status(201).send({msg:createData})
@@ -55,7 +56,7 @@ const userLogIn=async(req,res)=>{
         
         exp: Math.floor(Date.now()/1000)+24*60*60
        },
-       "reUnion")
+       "backend")
 
        res.setHeader("my-api-key", token)
        
@@ -110,7 +111,112 @@ const unfollowUser= async(req,res)=>{
 }
      catch(err){res.status(500).send(err.message)}
 }
+const blockUser=async(req,res)=>{
+  let mainUser= req.params.userId
+  
+  let blockUser= req.body.userId
+ try{
+        if(mainUser!=blockUser){   
+        let main= await userSchema.findOne({_id:mainUser})
+        if(!main) return res.status(404).send({msg:"invalid userId"})
+        let currUser= await userSchema.findOne({_id:blockUser})
 
 
+        if(!main.blocked.includes(blockUser)){
+          let finalUser= await main.updateOne({$push:{blocked:blockUser}})
+         
+          res.status(200).send({data:"User Blocked successfully"})
+        } else
+          res.status(403).send({msg:"already blocked"})
+    }
+}
+     catch(err){res.status(500).send(err.message)}
+}
+const unBlockUser= async(req,res)=>{
+  let mainUser= req.params.userId
+ 
+  let unBlocked= req.body.userId
+ 
+ let bodyArray=Object.keys(unBlocked)
+ 
+ try{
+  if(bodyArray.length==0){return res.status(400).send({data:"provide ID of user to be blocked"})}
+        if(mainUser!=unBlocked){   
+        let main= await userSchema.findOne({_id:mainUser})
+        if(!main) return res.status(404).send({msg:"invalid userId"})
+        let currUser= await userSchema.findOne({_id:unBlocked})
 
-module.exports={ createUser ,userLogIn,followers,unfollowUser}
+        if(main.blocked.includes(unBlocked)){
+          let finalUser= await main.updateOne({$pull:{followers:unBlocked}})
+         
+          res.status(200).send({data:" User unBlocked successfull"})
+        } else
+          res.status(403).send({msg:"u never blocked this account"} )
+    }
+}
+     catch(err){res.status(500).send(err.message)}
+}
+const updateUser = async(req,res)=>{
+  try{ 
+   let userId = req.params.userId
+   if (userId) {
+    if (mongoose.Types.ObjectId.isValid(userId) == false) {
+      return res
+        .status(400)
+        .send({ status: false, message: "userId Invalid" });
+    }
+  }
+   let findId= await userSchema.findOne({_id:userId})
+   if(!findId) return res.status(404).send({msg:"invalid userId"})
+
+  let data = req.body
+  if(!validator.isValidValue(data)){
+   return res.status(404).send({msg:"enter the valid data"})
+  }
+  
+  let updateData = await userSchema.findOneAndUpdate({_id:userId},{$set:data},{new:true}) 
+  res.status(200).send({data:updateData})
+  }
+  catch(err){res.status(500).send(err.message)}
+}
+const deleteUser = async(req,res)=>{
+  try{
+      let userId= req.params.userId
+      if (userId) {
+        if (mongoose.Types.ObjectId.isValid(userId) == false) {
+          return res
+            .status(400)
+            .send({ status: false, message: "userId Invalid" });
+        }
+      }
+    let findId= await userSchema.findOne({_id:userId})
+    if(!findId) return res.status(404).send({msg:"invalid postId"})
+    let deletedata= await userSchema.findOneAndUpdate({_id:userId},{$set:{isDeleted:true}},{new:true})
+    res.status(200).send({msg:"account has been deleted",deletedata})
+}
+
+catch(err){res.status(500).send(err.message)}
+}
+const getAllData=async(req,res)=>{
+  try{
+      let userId= req.params.userId
+      if (userId) {
+        if (mongoose.Types.ObjectId.isValid(userId) == false) {
+          return res
+            .status(400)
+            .send({ status: false, message: "userId Invalid" });
+        }
+      }
+      let findPost= await postSchema.find({userId:userId,isDeleted:false}).lean()
+    let findId= await userSchema.findOne({_id:userId}).lean()
+   if(findId.isDeleted=="true"){return res.status(400).send({status :false,message:"user not exist"})}
+    if(!findId) return res.status(404).send({msg:"invalid userId"})
+   
+    findId.postData=findPost
+   
+    res.status(200).send({data:findId})
+}
+catch(err){res.status(500).send(err.message)}
+}
+
+module.exports={ createUser ,userLogIn,followers,unfollowUser,blockUser,unBlockUser,updateUser,deleteUser,getAllData}

@@ -19,9 +19,13 @@ const isValidPhone = (phone)=>{
 }
 
 const isValidPassword = (password)=>{
-    return (/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password))
+    return (/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(password))
 }
-
+const isValidFiles = (files) => {
+    if (files && files.length > 0) return true
+  }
+  
+ 
 const isValidObjectId = (objectId) => mongoose.Types.ObjectId.isValid(objectId)
 
-module.exports = { isValidValue,isValidName,isValidEmail,isValidPhone,isValidObjectId,isValidPassword }
+module.exports = { isValidValue,isValidName,isValidEmail,isValidPhone,isValidObjectId,isValidPassword,isValidFiles }

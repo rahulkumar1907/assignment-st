@@ -100,9 +100,7 @@ const likePost = async(req,res)=>{
     }
     catch(err){res.status(500).send(err.message)}
   }
- //................................get all posts...........................
-
-//................................delete post...............................
+ 
 
 
 

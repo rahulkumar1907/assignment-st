@@ -116,6 +116,8 @@ const blockUser=async(req,res)=>{
   
   let blockUser= req.body.userId
  try{
+ 
+
         if(mainUser!=blockUser){   
         let main= await userSchema.findOne({_id:mainUser})
         if(!main) return res.status(404).send({msg:"invalid userId"})

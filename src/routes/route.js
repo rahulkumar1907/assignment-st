@@ -6,25 +6,23 @@ const { createPost, likePost, dislikePost, deletePost, updatePost,  } = require(
 
 
 
-
 router.post('/createUser', createUser);
-
 router.post('/login', userLogIn);
-router.post('/createpost', createPost);
-router.post('/followers/:userId', followers);
-router.post('/unfollowUser/:userId', unfollowUser);
-router.post('/likepost/:postId', likePost);
-router.post('/dislikepost/:postId', dislikePost);
-router.delete('/deletepost/:postId', deletePost);
-router.post('/blockuser/:userId', blockUser);
-router.post('/unblockuser/:userId', unBlockUser);
-router.put('/updateuser/:userId', updateUser);
-router.put('/updatepost/:postId', updatePost);
-router.delete('/deleteuser/:userId', deleteUser);
-router.get('/getdetail/:userId', getAllData);
-// //==post tweet
+router.post('/createpost',middleware.authentication, createPost);
+router.post('/followers/:userId',middleware.authentication,middleware.authorization, followers);
+router.post('/unfollowUser/:userId',middleware.authentication,middleware.authorization, unfollowUser);
+router.post('/likepost/:postId',middleware.authentication, likePost);
+router.post('/dislikepost/:postId',middleware.authentication, dislikePost);
+router.delete('/deletepost/:postId',middleware.authentication, deletePost);
+router.post('/blockuser/:userId',middleware.authentication,middleware.authorization, blockUser);
+router.post('/unblockuser/:userId',middleware.authentication,middleware.authorization, unBlockUser);
+router.put('/updateuser/:userId',middleware.authentication,middleware.authorization, updateUser);
+router.put('/updatepost/:postId',middleware.authentication,middleware.authorization, updatePost);
+router.delete('/deleteuser/:userId',middleware.authentication,middleware.authorization, deleteUser);
+router.get('/getdetail/:userId',middleware.authentication, getAllData);
 
-// router.get('/getdetail', getAllData);
+
+
 
 
 
